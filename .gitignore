@@ -1,0 +1,47 @@
+*.pyc
+
+# Packages
+*.egg
+!/tests/**/*.egg
+/*.egg-info
+/dist/*
+build
+_build
+.cache
+*.so
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.pytest_cache
+/test.py
+/test_*.*
+
+# IDEs and system files
+.DS_Store
+.idea/*
+.python-version
+.vscode/*
+
+
+/setup.cfg
+MANIFEST.in
+/setup.py
+/docs/site/*
+/tests/fixtures/simple_project/setup.py
+/tests/fixtures/project_with_extras/setup.py
+.mypy_cache
+
+.venv
+/releases/*
+pip-wheel-metadata
+/poetry.tomlfor
+poetry/core/*
+
+node_modules
+
+# Environment
+.env
+.env.local
