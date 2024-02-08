@@ -23,7 +23,9 @@ class Settings(BaseSettings):
     auth0_api_id: str
     auth0_api_audience: str
 
-    model_config = SettingsConfigDict(env_file=".env", extra='ignore')
+    openai_redirect_uri: str
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 @lru_cache

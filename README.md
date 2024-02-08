@@ -5,7 +5,9 @@
 - [x] Integrate with Auth0 as OAuth 2.0 Server
 - [x] Authenticate GPT using OAuth `authorization_code` flow
 - [x] Verify JWT to process `access_token`
-- [ ] Create a protected endpoint for talking with ChatGPT
+- [x] Create a protected endpoint for talking with ChatGPT
+- [ ] Identify users for endpoint usage and allow access to different resources
+- [ ] Integrate agent with Vector DB
 - [ ] Deploy to AWS Lambda (`mangum`)
 - [ ] Setup SolidJS (`web`)
 - [ ] Integrate with Supabase as DB?

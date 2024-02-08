@@ -17,6 +17,7 @@ python-multipart = "^0.0.7"
 sqlalchemy = "^2.0.25"
 supabase = "^2.3.4"
 uvicorn = {extras = ["standard"], version = "^0.27.0.post1"}
+itsdangerous = "^2.1.2"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -24,6 +25,15 @@ requires = ["poetry-core"]
 
 [tool.isort]
 profile = "black"
+
+[tool.black]
+line-length = 88
+
+[tool.flake8]
+format = "grouped"
+max-complexity = 25
+max-line-length = 88
+show_source = true
 
 [tool.poetry.scripts]
 dev = "runserver:start"

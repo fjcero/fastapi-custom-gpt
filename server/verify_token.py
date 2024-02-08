@@ -1,7 +1,6 @@
 import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import (HTTPAuthorizationCredentials, HTTPBearer,
-                              SecurityScopes)
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, SecurityScopes
 
 from server.config import get_settings
 
@@ -15,8 +14,7 @@ class UnauthorizedException(HTTPException):
 class UnauthenticatedException(HTTPException):
     def __init__(self):
         super().__init__(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Requires authentication"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Requires authentication"
         )
 
 
@@ -28,13 +26,13 @@ class VerifyToken:
 
         # This gets the JWKS from a given URL and does processing so you can
         # use any of the keys available
-        jwks_url = f'https://{self.config.auth0_domain}/.well-known/jwks.json'
+        jwks_url = f"https://{self.config.auth0_domain}/.well-known/jwks.json"
         self.jwks_client = jwt.PyJWKClient(jwks_url)
 
     async def verify(
         self,
         security_scopes: SecurityScopes,
-        token: HTTPAuthorizationCredentials | None = Depends(HTTPBearer())
+        token: HTTPAuthorizationCredentials | None = Depends(HTTPBearer()),
     ):
         if token is None:
             raise UnauthenticatedException
@@ -60,9 +58,9 @@ class VerifyToken:
                 issuer=f"https://{self.config.auth0_domain}/",
             )
 
-            print("security_scopes:", security_scopes.scopes)
-            #         for scope in security_scopes.scopes:
-            # if scope not in token_data.scopes:
+            # print("security_scopes:", security_scopes.scopes)
+            # for scope in security_scopes.scopes:
+            # if scope not in payload.scopes:
             #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
             # 		        detail="Not enough permissions",
             # 			headers={"WWW-Authenticate": authenticate_value},)

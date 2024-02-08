@@ -104,11 +104,13 @@ async def authorize(request: Request):
     code = request.query_params.get("code")
     state = request.query_params.get("state")
     scope = "read:all write:all openid email profile offline_access"
-    redirect_uri = "https://eagle-major-notably.ngrok-free.app/authorize"
+
+    # Redirect to same server
+    redirect_uri = f"{request.url}/authorize"
 
     if code and state:
         callback_params = {"code": code, "state": state}
-        openai_redirect_uri = "https://chat.openai.com/aip/g-248e136e506eb5cfd9b5bf6be172b6eda68557b4/oauth/callback"
+        openai_redirect_uri = settings.openai_redirect_uri
         callback_url = f"{openai_redirect_uri}?{urlencode(callback_params)}"
         print("callback", callback_url)
 
@@ -123,7 +125,6 @@ async def authorize(request: Request):
 
         return RedirectResponse(callback_url)
     else:
-        # Construct the OAuth URL with the state parameter and an auth/callback url
         params = {
             "response_type": "code",
             "client_id": settings.auth0_client_id,
@@ -140,8 +141,8 @@ async def authorize(request: Request):
 
 @app.post("/token")
 async def token(request: Request, payload: Any = Body(None)):
-    redirect_uri = "https://eagle-major-notably.ngrok-free.app/authorize"
-    # print(request.url_for("/token"), request.url_for("/token"))
+    # Redirect to same server
+    redirect_uri = f"{request.url}/authorize"
 
     try:
         params = await request.form()
@@ -169,17 +170,19 @@ async def token(request: Request, payload: Any = Body(None)):
 
         # Check if the response from Google is successful
         # if response.status_code != 200:
-        #     print("Error during token exchange with Google:", response.status_code, response.text)
-        #     raise HTTPException(status_code=500, detail="Token exchange failed")
+        #     raise HTTPException(status_code=500,
+        # detail="Token exchange failed")
 
         # token_response = {}
         # response.json()
         # print(token_response)
 
         # Check if the necessary tokens are present in the response
-        # if "access_token" not in token_response or "refresh_token" not in token_response:
+        # if "access_token" not in token_response
+        #    or "refresh_token" not in token_response:
         #     print("Missing tokens in Google's response:", token_response)
-        #     raise HTTPException(status_code=500, detail="Missing tokens in response")
+        #     raise HTTPException(status_code=500,
+        #    detail="Missing tokens in response")
 
         # Return the formatted token response
         return {
@@ -191,7 +194,8 @@ async def token(request: Request, payload: Any = Body(None)):
 
     # except RequestException as e:
     #     print("Request exception during token exchange:", e, file=sys.stderr)
-    #     raise HTTPException(status_code=500, detail="Token exchange request failed")
+    #     raise HTTPException(status_code=500,
+    # detail="Token exchange request failed")
 
     except Exception as e:
         print("Unexpected error in /token endpoint:", e, file=sys.stderr)
