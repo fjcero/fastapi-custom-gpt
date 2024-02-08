@@ -1,21 +1,17 @@
 import json
 import sys
-from contextlib import asynccontextmanager
-from typing import Annotated, Any
+from typing import Any
 from urllib.parse import urlencode
 
 import httpx
-from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi import (Body, Depends, FastAPI, Form, HTTPException, Request,
-                     Security, requests, status)
+from authlib.integrations.starlette_client import OAuth
+from fastapi import Body, Depends, FastAPI, HTTPException, Request, Security
 from fastapi.responses import RedirectResponse
-from fastapi.security import (HTTPBearer, OAuth2AuthorizationCodeBearer,
-                              OAuth2PasswordBearer, OAuth2PasswordRequestForm)
-from fastapi_auth0 import Auth0, Auth0User
-from pydantic import BaseModel
+from fastapi.security import HTTPBearer, OAuth2PasswordBearer
 from starlette.middleware.sessions import SessionMiddleware
 
-from .config import get_settings
+from server.config import get_settings
+from server.verify_token import VerifyToken
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -26,16 +22,11 @@ from .config import get_settings
 
 # app = FastAPI(lifespan=lifespan)
 app = FastAPI()
+auth = VerifyToken()
 app.add_middleware(SessionMiddleware, secret_key="secret-key")
 
 settings = get_settings()
 
-
-auth = Auth0(
-    domain=settings.auth0_domain,
-    api_audience=settings.auth0_api_audience,
-    scopes={"read:all": "write:all"},
-)
 
 oauth = OAuth()
 oauth.register(
@@ -232,14 +223,8 @@ async def token(request: Request, payload: Any = Body(None)):
 
 
 @app.get('/secure')
-# def secure_endpoint(user=Security(oauth2_scheme)):
-def secure_endpoint(user=Security(get_user)):
-    return {"message": "This is a secure endpoint.", "user": user}
-
-
-# @app.get("/secure", dependencies=[Depends(auth.implicit_scheme)])
-# def get_secure(user: Auth0User = Security(auth.get_user, scopes=["read:all"])):
-#     return {"message": f"{user}"}
+def secure_endpoint(auth_result: str = Security(auth.verify, scopes=["read:all"])):
+    return {"message": "This is a secure endpoint.", "auth": auth_result}
 
 
 @app.get("/query")
