@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 import httpx
 from authlib.integrations.starlette_client import OAuth
-from fastapi import Body, Depends, FastAPI, HTTPException, Request, Security
+from fastapi import Body, FastAPI, HTTPException, Request, Security
 from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPBearer, OAuth2PasswordBearer
 from starlette.middleware.sessions import SessionMiddleware
@@ -51,14 +51,6 @@ oauth.register(
 )
 
 token_auth_scheme = HTTPBearer()
-
-# client = OAuth2Session(
-#     settings.auth0_client_id,
-#     settings.auth0_client_secret,
-#     scope="read:all write:all",
-# )
-
-# oauth2_scheme = OAuth2AuthorizationCodeBearer(tokenUrl="token", authorizationUrl="authorize")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # oauth2_scheme = OAuth2AuthorizationCodeBearer(
 #     authorizationUrl=f"https://{settings.auth0_domain}/authorize",
@@ -103,22 +95,6 @@ def root(request: Request):
         }
     else:
         return {"Hello": "World"}
-
-
-# @app.get("/authorize")
-# async def logintest(request: Request):
-#     # print("AUTHORIZE", request.query_params, request.headers)
-#     # redirect_uri = "http://127.0.0.1:8000/authorize/callback"
-#     # redirect_uri = "https://eagle-major-notably.ngrok-free.app/authorize/callback"
-#     auth_url = await get_authorize_url(
-#         response_type="code",
-#         redirect_uri=redirect_uri,
-#         scope="read:all write:all",  # openid profile email offline_access
-#         state=request.query_params.get('state'),
-#     )
-#     print(auth_url)
-#     # return await oauth.auth0.authorize_redirect(request, redirect_uri)
-#     return RedirectResponse(url=auth_url, status_code=status.HTTP_302_FOUND)
 
 
 @app.get("/authorize")
@@ -223,12 +199,15 @@ async def token(request: Request, payload: Any = Body(None)):
 
 
 @app.get('/secure')
-def secure_endpoint(auth_result: str = Security(auth.verify, scopes=["read:all"])):
-    return {"message": "This is a secure endpoint.", "auth": auth_result}
+def secure_endpoint(auth: str = Security(auth.verify, scopes=["read:all"])):
+    return {"message": "This is a secure endpoint.", "auth": auth}
 
 
 @app.get("/query")
-def query(request: Request, token: str = Depends(token_auth_scheme)):
+def query(
+    request: Request,
+    auth: str = Security(auth.verify, scopes=["read:all"])
+):
     print("QUERY", token.credentials)
     return {
         "location": {"city": "New York", "state": "NY", "country": "USA"},

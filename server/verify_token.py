@@ -36,7 +36,6 @@ class VerifyToken:
         security_scopes: SecurityScopes,
         token: HTTPAuthorizationCredentials | None = Depends(HTTPBearer())
     ):
-        print("security_scopes:", security_scopes.scopes)
         if token is None:
             raise UnauthenticatedException
 
@@ -60,6 +59,8 @@ class VerifyToken:
                 audience=self.config.auth0_api_audience,
                 issuer=f"https://{self.config.auth0_domain}/",
             )
+
+            print("security_scopes:", security_scopes.scopes)
 
         except Exception as error:
             raise UnauthorizedException(str(error))
