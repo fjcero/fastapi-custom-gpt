@@ -61,6 +61,12 @@ class VerifyToken:
             )
 
             print("security_scopes:", security_scopes.scopes)
+            #         for scope in security_scopes.scopes:
+            # if scope not in token_data.scopes:
+            #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+            # 		        detail="Not enough permissions",
+            # 			headers={"WWW-Authenticate": authenticate_value},)
+            # return user
 
         except Exception as error:
             raise UnauthorizedException(str(error))

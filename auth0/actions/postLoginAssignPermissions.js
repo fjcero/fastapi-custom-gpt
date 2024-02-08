@@ -7,10 +7,9 @@
 exports.onExecutePostUserRegistration = async (event, api) => {
   const ManagementClient = require("auth0").ManagementClient;
   const management = new ManagementClient({
-    domain: "dev-exfy5kks8o6zwoko.us.auth0.com",
-    clientId: "1PDJJmnNNeH2rTKXEbpAcr5iqiMH0LNC",
-    clientSecret:
-      "HQmtaWKRMgAzWn5RsD1QyPwe7DvigcypCpxfgDLOZro3zJ6PW_7rGiZe7CZSHhn-",
+    domain: env.domain,
+    clientId: env.clientId,
+    clientSecret: env.clientSecret,
   });
 
   const resourceId = "https://fastapi_custom_gpts";
