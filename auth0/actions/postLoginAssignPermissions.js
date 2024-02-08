@@ -1,15 +1,15 @@
 /**
- * Handler that will be called during the execution of a PostUserRegistration flow.
+ * Handler that will be called during the execution of a PostLogin flow.
  *
- * @param {Event} event - Details about the context and user that has registered.
- * @param {PostUserRegistrationAPI} api - Methods and utilities to help change the behavior after a signup.
+ * @param {Event} event - Details about the user and the context in which they are logging in.
+ * @param {PostLoginAPI} api - Interface whose methods can be used to change the behavior of the login.
  */
-exports.onExecutePostUserRegistration = async (event, api) => {
+exports.onExecutePostLogin = async (event, api) => {
   const ManagementClient = require("auth0").ManagementClient;
   const management = new ManagementClient({
-    domain: env.domain,
-    clientId: env.clientId,
-    clientSecret: env.clientSecret,
+    domain: event.secrets.auth0_domain,
+    clientId: event.secrets.auth0_clientId,
+    clientSecret: event.secrets.auth0_clientSecret,
   });
 
   const resourceId = "https://fastapi_custom_gpts";
@@ -27,6 +27,6 @@ exports.onExecutePostUserRegistration = async (event, api) => {
   };
 
   const user_id = event.user.user_id;
-  const permissions = ["all:read", "all:write"];
+  const permissions = ["read:all", "write:all"];
   await assignPermissions(user_id, permissions);
 };
