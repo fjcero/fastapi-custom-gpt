@@ -4,7 +4,6 @@ from typing import Any
 from urllib.parse import urlencode
 
 import httpx
-from authlib.integrations.starlette_client import OAuth
 from fastapi import Body, FastAPI, HTTPException, Request, Security
 from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPBearer, OAuth2PasswordBearer
@@ -28,27 +27,28 @@ app.add_middleware(SessionMiddleware, secret_key="secret-key")
 settings = get_settings()
 
 
-oauth = OAuth()
-oauth.register(
-    name="auth0",
-    client_id=settings.auth0_client_id,
-    client_secret=settings.auth0_client_secret,
-    client_kwargs={
-        "scope": "openid profile email offline_access read:all write:all"
-    },
+# Depends on `authlib`
+# oauth = OAuth()
+# oauth.register(
+#     name="auth0",
+#     client_id=settings.auth0_client_id,
+#     client_secret=settings.auth0_client_secret,
+#     client_kwargs={
+#         "scope": "openid profile email offline_access read:all write:all"
+#     },
 
-    authorize_url=f"https://{settings.auth0_domain}/authorize",
-    authorize_params={
-        "audience": settings.auth0_api_audience,
-    },
-    # api_base_url=f'https://{settings.auth0_domain}',
-    # access_token_url=f"https://{settings.auth0_domain}/oauth/token",
+#     authorize_url=f"https://{settings.auth0_domain}/authorize",
+#     authorize_params={
+#         "audience": settings.auth0_api_audience,
+#     },
+#     # api_base_url=f'https://{settings.auth0_domain}',
+#     # access_token_url=f"https://{settings.auth0_domain}/oauth/token",
 
-    server_metadata_url=(
-        f'https://{settings.auth0_domain}/.well-known/openid-configuration'
-    ),
-    # jwks_uri=f'https://{settings.auth0_domain}/.well-known/jwks.json',
-)
+#     server_metadata_url=(
+#         f'https://{settings.auth0_domain}/.well-known/openid-configuration'
+#     ),
+#     # jwks_uri=f'https://{settings.auth0_domain}/.well-known/jwks.json',
+# )
 
 token_auth_scheme = HTTPBearer()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -77,7 +77,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 async def get_user(request: Request):
-    user = request.session.get('user')
+    user = request.session.get("user")
     if user:
         return user
     raise HTTPException(status_code=401, detail="Not authenticated")
@@ -85,13 +85,13 @@ async def get_user(request: Request):
 
 @app.get("/")
 def root(request: Request):
-    user = request.session.get('user')
+    user = request.session.get("user")
     if user:
         return {
             "Hello": "World",
             "user": user,
-            "auth": request.session.get('auth'),
-            "raw_auth": request.session.get('raw_auth')
+            "auth": request.session.get("auth"),
+            "raw_auth": request.session.get("raw_auth"),
         }
     else:
         return {"Hello": "World"}
@@ -101,8 +101,8 @@ def root(request: Request):
 async def authorize(request: Request):
     print("AUTHORIZE", request.query_params)
     # openai_redirect_uri = request.query_params.get('redirect_uri')
-    code = request.query_params.get('code')
-    state = request.query_params.get('state')
+    code = request.query_params.get("code")
+    state = request.query_params.get("state")
     scope = "read:all write:all openid email profile offline_access"
     redirect_uri = "https://eagle-major-notably.ngrok-free.app/authorize"
 
@@ -146,7 +146,7 @@ async def token(request: Request, payload: Any = Body(None)):
     try:
         params = await request.form()
         print("TOKEN", request.query_params, request.headers, payload, params)
-        code = params.get('code')
+        code = params.get("code")
 
         print(f"token endpoint: request data = {params}")
 
@@ -186,7 +186,7 @@ async def token(request: Request, payload: Any = Body(None)):
             "access_token": token_response.get("access_token"),
             "token_type": "bearer",
             "refresh_token": token_response.get("refresh_token"),
-            "expires_in": token_response.get("expires_in")
+            "expires_in": token_response.get("expires_in"),
         }
 
     # except RequestException as e:
@@ -195,19 +195,18 @@ async def token(request: Request, payload: Any = Body(None)):
 
     except Exception as e:
         print("Unexpected error in /token endpoint:", e, file=sys.stderr)
-        raise HTTPException(status_code=500, detail="Unexpected error in token exchange")
+        raise HTTPException(
+            status_code=500, detail="Unexpected error in token exchange"
+        )
 
 
-@app.get('/secure')
+@app.get("/secure")
 def secure_endpoint(auth: str = Security(auth.verify, scopes=["read:all"])):
     return {"message": "This is a secure endpoint.", "auth": auth}
 
 
 @app.get("/query")
-def query(
-    request: Request,
-    auth: str = Security(auth.verify, scopes=["read:all"])
-):
+def query(request: Request, auth: str = Security(auth.verify, scopes=["read:all"])):
     print("QUERY", auth)
     return {
         "location": {"city": "New York", "state": "NY", "country": "USA"},
@@ -224,7 +223,7 @@ def query(
                     "high": {"fahrenheit": 75, "celsius": 24},
                     "low": {"fahrenheit": 55, "celsius": 13},
                     "condition": "Increasing cloudiness with a chance "
-                                 "of rain by evening",
+                    "of rain by evening",
                 },
                 {
                     "day": "Tomorrow",
