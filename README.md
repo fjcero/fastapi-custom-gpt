@@ -1,10 +1,16 @@
 # FastAPI + OAuth 2.0 + GPT custom action
 
-- [ ] Setup server (`server`)
-- [ ] Use Supabase as DB
-- [ ] Setup frontend (`web`)
-- [ ] OAuth 2.0 Server
+- [x] Setup FastAPI (`server`)
+- [x] Setup Auth0 
+- [x] Integrate with Auth0 as OAuth 2.0 Server
+- [x] Authenticate GPT using OAuth `authorization_code` flow
+- [x] Verify JWT to process `access_token`
+- [ ] Create a protected endpoint for talking with ChatGPT
 - [ ] Deploy to AWS Lambda (`mangum`)
+- [ ] Setup SolidJS (`web`)
+- [ ] Integrate with Supabase as DB?
+
+![gpt-custom-action-demo](/public/gpt-custom-action-demo.jpg "How custom actions authenticate")
 
 ## Requirements
 
@@ -13,7 +19,7 @@
 poetry install
 ```
 
-## Dev 
+## Dev Env
 
 ```sh
 poetry run dev
@@ -21,11 +27,13 @@ poetry run dev
 
 ## Docs
 
-- OpenAPI: locahost:8000/docs
-- Redoc: locahost:8000/redoc
+- [OpenAPI](http://locahost:8000/docs)
+- [Redoc](http://locahost:8000/redoc)
 
 
-## Regenerate requirements.txt
+## Deploy
+
+### Regenerate requirements.txt for deployment
 ```
 poetry export --without-hashes --format=requirements.txt > requirements.txt
 ```

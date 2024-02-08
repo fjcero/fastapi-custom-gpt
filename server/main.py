@@ -208,7 +208,7 @@ def query(
     request: Request,
     auth: str = Security(auth.verify, scopes=["read:all"])
 ):
-    print("QUERY", token.credentials)
+    print("QUERY", auth)
     return {
         "location": {"city": "New York", "state": "NY", "country": "USA"},
         "current_weather": {
